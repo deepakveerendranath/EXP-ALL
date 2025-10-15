@@ -1,0 +1,113 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* Header */
+header {
+  background: #ffb6b9;
+  color: #fff;
+  text-align: center;
+  padding: 20px 0;
+  position: relative;
+}
+
+/* Navigation Bar - Fixed */
+nav {
+  background: #ff6f61;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+}
+
+nav ul li {
+  margin: 10px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Adjust content to not hide behind navbar */
+section {
+  padding: 100px 20px;
+  text-align: center;
+}
+
+/* Slideshow */
+.slideshow {
+  position: relative;
+  max-width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Animation */
+.fade {
+  animation: fadeEffect 9s infinite;
+}
+
+@keyframes fadeEffect {
+  0% {opacity: 0;}
+  10% {opacity: 1;}
+  33% {opacity: 1;}
+  43% {opacity: 0;}
+  100% {opacity: 0;}
+}
+
+/* Footer */
+footer {
+  background: #ff6f61;
+  color: #fff;
+  text-align: center;
+  padding: 15px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+  }
+
+  .slideshow {
+    height: 250px;
+  }
+
+  section {
+    padding: 80px 10px;
+  }
+}
