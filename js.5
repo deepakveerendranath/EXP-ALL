@@ -1,0 +1,92 @@
+const form = document.getElementById("registrationForm");
+const fullName = document.getElementById("fullname");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const phone = document.getElementById("phone");
+const successMessage = document.getElementById("successMessage");
+
+// Real-time validation
+form.addEventListener("input", (e) => {
+  validateField(e.target);
+});
+
+// On form submit
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  let isValid = true;
+  [fullName, email, password, phone].forEach((field) => {
+    if (!validateField(field)) {
+      isValid = false;
+    }
+  });
+
+  if (isValid) {
+    successMessage.textContent = "✅ Registration successful!";
+    form.reset();
+    clearStyles();
+  } else {
+    successMessage.textContent = "";
+  }
+});
+
+// Validation function
+function validateField(field) {
+  const value = field.value.trim();
+  const errorElement = field.nextElementSibling;
+
+  if (value === "") {
+    showError(field, "This field is required", errorElement);
+    return false;
+  }
+
+  if (field.id === "email" && !isValidEmail(value)) {
+    showError(field, "Enter a valid email", errorElement);
+    return false;
+  }
+
+  if (field.id === "password" && !isStrongPassword(value)) {
+    showError(
+      field,
+      "Password must be 6+ chars with a number & special char",
+      errorElement
+    );
+    return false;
+  }
+
+  if (field.id === "phone" && !/^[0-9]{10}$/.test(value)) {
+    showError(field, "Enter a 10-digit phone number", errorElement);
+    return false;
+  }
+
+  showSuccess(field, errorElement);
+  return true;
+}
+
+function showError(field, message, errorElement) {
+  field.classList.add("invalid");
+  field.classList.remove("valid");
+  errorElement.textContent = message;
+}
+
+function showSuccess(field, errorElement) {
+  field.classList.remove("invalid");
+  field.classList.add("valid");
+  errorElement.textContent = "";
+}
+
+function isValidEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
+
+function isStrongPassword(password) {
+  const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*]).{6,}$/;
+  return regex.test(password);
+}
+
+function clearStyles() {
+  [fullName, email, password, phone].forEach((field) => {
+    field.classList.remove("valid", "invalid");
+  });
+}

@@ -1,0 +1,90 @@
+const apiKey = "https://api.open-meteo.com/v1/forecast"; // free public API
+const cityInput = document.getElementById("cityInput");
+const searchBtn = document.getElementById("searchBtn");
+const weatherResult = document.getElementById("weatherResult");
+const errorMsg = document.getElementById("error");
+
+// When page loads — check localStorage
+window.addEventListener("DOMContentLoaded", () => {
+  const lastCity = localStorage.getItem("lastCity");
+  if (lastCity) {
+    cityInput.value = lastCity;
+    fetchWeather(lastCity);
+  }
+});
+
+searchBtn.addEventListener("click", () => {
+  const city = cityInput.value.trim();
+  if (city === "") {
+    showError("Please enter a city name!");
+    return;
+  }
+  fetchWeather(city);
+});
+
+// Fetch weather data using async/await
+async function fetchWeather(city) {
+  try {
+    showError(""); // clear previous error
+    weatherResult.innerHTML = "Loading...";
+
+    // Use Geocoding API to get lat/lon for city
+    const geoRes = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${city}`
+    );
+    const geoData = await geoRes.json();
+
+    if (!geoData.results || geoData.results.length === 0) {
+      throw new Error("City not found!");
+    }
+
+    const { latitude, longitude, name, country } = geoData.results[0];
+
+    // Fetch weather data from coordinates
+    const weatherRes = await fetch(
+      `${apiKey}?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+    );
+    const weatherData = await weatherRes.json();
+
+    const { temperature, windspeed, weathercode } =
+      weatherData.current_weather;
+
+    displayWeather(name, country, temperature, windspeed, weathercode);
+
+    // Save to localStorage
+    localStorage.setItem("lastCity", city);
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+function displayWeather(city, country, temp, wind, code) {
+  const condition = getWeatherCondition(code);
+  weatherResult.innerHTML = `
+    <h3>${city}, ${country}</h3>
+    <p>🌡️ Temperature: ${temp}°C</p>
+    <p>💨 Wind Speed: ${wind} km/h</p>
+    <p>🌥️ Condition: ${condition}</p>
+  `;
+}
+
+function showError(message) {
+  errorMsg.textContent = message;
+  weatherResult.innerHTML = "";
+}
+
+function getWeatherCondition(code) {
+  const map = {
+    0: "Clear Sky",
+    1: "Mainly Clear",
+    2: "Partly Cloudy",
+    3: "Overcast",
+    45: "Fog",
+    48: "Depositing Rime Fog",
+    51: "Light Drizzle",
+    61: "Rain",
+    71: "Snowfall",
+    95: "Thunderstorm",
+  };
+  return map[code] || "Unknown";
+}
